@@ -21,9 +21,18 @@ class Linkweb
 	class << self
 
 		def test(url)
+
+      # Remove trailing slash i exists
+      url = remove_trailing_slash(url)
+
+      # Get pages html
       html = get_html(url)
+
       # Get hrefs for all the @@dom_elements
       hrefs = find_links(html,@@dom_elements,url)
+
+      # Remove hrefs unrelated to the domain
+      hrefs = remove_external_domain_hrefs(hrefs, url)
 
       # Checks the sites to which links were found
       bad_links = check_links(hrefs)
@@ -40,6 +49,7 @@ class Linkweb
       nil
 		end
 
+    # Gets initial page html
     def get_html(url)
       Headless.ly do
         session = Capybara::Session.new(:webkit)
@@ -48,6 +58,7 @@ class Linkweb
       end
     end
 
+    # Find existing links for the given html/url
     def find_links(html, elements, url)
       result_array = []
       elements.each do |el|
@@ -73,7 +84,7 @@ class Linkweb
           bad_links.push(x) if !check_page(session)
         end
       end
-      
+
       bad_links
     end
 
@@ -88,9 +99,23 @@ class Linkweb
       # Check if inner body text includes unwanted expressions
       @@bad_html_strings.each do |html_regex|
         html = Nokogiri::HTML(session.html)
-        return false if code_regex =~ html.css('body').inner_text
+        return false if html_regex =~ html.css('body').inner_text
       end
       true
+    end
+
+    # Removes trailing slash from the url
+    def remove_trailing_slash(url)
+      url[-1] == '/' ? url[0..-2] : url
+    end
+
+    # Removes hrefs for external domains
+    def remove_external_domain_hrefs(hrefs, domain_url)
+      short_url = domain_url.split('/')[2]
+      url_regex = Regexp.new(short_url)
+      hrefs.map do |href|
+        href =~ url_regex ? href : nil
+      end
     end
 
 	end
