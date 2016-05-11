@@ -111,12 +111,13 @@ class Linkweb
 
     # Removes hrefs for external domains
     def remove_external_domain_hrefs(hrefs, domain_url)
+      binding.pry
       short_url = domain_url.split('/')[2]
       url_regex = Regexp.new(short_url)
-      hrefs.map do |href|
+      hrefs = hrefs.map do |href|
         href =~ url_regex ? href : nil
       end
-      hrefs.compact!
+      hrefs.compact
     end
 
 	end
