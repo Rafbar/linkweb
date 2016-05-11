@@ -79,9 +79,18 @@ class Linkweb
         
         urls.each do |x|
           puts "Now visiting: #{x[0..40]}"
-          session.visit(x)
-          puts session.status_code
-          bad_links.push(x) if !check_page(session)
+          begin
+            session.visit(x)
+            puts session.status_code
+            bad_links.push(x) if !check_page(session)
+          rescue => e
+            puts "\n\n####################################################"
+            puts "Unexpected error:"
+            puts e.message
+            puts "####################################################\n\n"
+            bad_links.push(x)
+            next
+          end
         end
       end
 
@@ -101,6 +110,7 @@ class Linkweb
         html = Nokogiri::HTML(session.html)
         return false if html_regex =~ html.css('body').inner_text
       end
+
       true
     end
 
