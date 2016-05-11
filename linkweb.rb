@@ -116,6 +116,7 @@ class Linkweb
       hrefs.map do |href|
         href =~ url_regex ? href : nil
       end
+      hrefs.compact!
     end
 
 	end
