@@ -17,11 +17,9 @@ class Linkweb
   @@bad_status_codes = [/\A4/,/\A5/]
   @@bad_html_strings = [/cannot load/, /failed to load/, /error/, /exception/]
 
+  class << self
 
-	class << self
-
-		def test(url)
-
+    def test(url)
       # Remove trailing slash i exists
       url = remove_trailing_slash(url)
 
@@ -47,7 +45,7 @@ class Linkweb
       
       # Clears the call output
       nil
-		end
+    end
 
     # Gets initial page html
     def get_html(url)
@@ -129,7 +127,7 @@ class Linkweb
       hrefs.compact
     end
 
-	end
+  end
 end
 
 
